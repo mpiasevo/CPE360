@@ -23,6 +23,7 @@ class TreeChunk {
 };
 
 class BST{
+
 	public:
 		TreeChunk *root;
 		BST(){
@@ -87,7 +88,9 @@ class BST{
 					search(key, start->right);
 				}
 			}
+			return true;		
 		}
+
 		//3. Display contents of the tree
 		void preorder(TreeChunk *start) {
 			if (start == NULL) {
@@ -124,6 +127,12 @@ class BST{
 				inorder(start->right);
 			}
 		}
+		//Find min value for delete case 3:
+		TreeChunk *findMin(TreeChunk *min){
+			while(min->left != NULL)
+				min = min->left;
+			return min;
+		}
 
 		//4. Delete values from the tree
 		void deleteNode(int key) {
@@ -158,7 +167,7 @@ class BST{
 			cout << "Found the node, now trying to classify the type of delete." << endl;
 			//	Case 1 (no child, left and right are NULL)
 			if(fast->right == NULL && fast->left == NULL) {
-				cout << "Looks like a Case 1 delete for: " << key << endl;
+				//cout << "Looks like a Case 1 delete for: " << key << endl;
 
 				if(slow->right == fast) {
 					//the node is to the right of slow
@@ -175,7 +184,7 @@ class BST{
 			}
 			//	Case 2 (one child)
 			else if ((fast->right == NULL && fast->left != NULL)||(fast->left == NULL && fast->right != NULL)) {
-				cout << "Looks like a Case 2 delete for: " << key << endl;
+				//cout << "Looks like a Case 2 delete for: " << key << endl;
 				
 				if (fast->left != NULL) {
 					if (slow->left == fast) {
@@ -210,16 +219,28 @@ class BST{
 			}
 			//	Case 3 (two child)
 			else {
-				cout << "Looks like a Case 3 delete for: " << key << endl;
-			
+				// cout << "Looks like a Case 3 delete for: " << key << endl;
 				
+				TreeChunk *temp = findMin(fast->right);
+				slow = fast->right;
+				fast->data = temp->data;
+				temp->data = temp->data + 1;
+				while (slow->left != temp && slow->left != NULL) {
+					slow = slow->left;
+				}
+				deleteNode(temp->data);
+				slow->left = NULL;
 			}
 		}
 };
 
 int main(){
 	BST myTree;
+	int choice;
+	int value;
+	int traverse;
 	//Initialize the Tree
+
 	myTree.add(30);
 	myTree.add(15);
 	myTree.add(60);
@@ -230,7 +251,65 @@ int main(){
 	myTree.add(27);
 	myTree.add(75);
 	myTree.add(80);
-	
+
+	 while(1) {
+		cout << "===============================================" << endl;
+		cout << "Choose one of the following options: " << endl;
+        cout << "Press [1] to add to the tree " << endl;
+        cout << "Press [2] to delete from the tree " << endl;
+        cout << "Press [3] to traverse the tree " << endl;
+        cout << "Press [4] to search the tree" << endl;
+        cout << "Press [ANY] key to QUIT " << endl;
+        cin >> choice;
+		cout << "===============================================" << endl;
+
+       switch(choice) {
+            case 1: 
+                    cout << "Add what? " << endl;
+                    cin >> value;
+                    myTree.add(value);
+                    break;
+            case 2:
+                    cout << "What number would you like to delete? " << endl;
+                    cin >> value;
+                     myTree.deleteNode(value);
+                    break;
+            case 3:
+					cout << "What way would you like to traverse the tree? " << endl;
+					cout << "Press [1] for preorder traversal " << endl;
+					cout << "Press [2] for postorder traversal " << endl;
+					cout << "Press [3] for inorder traversal " << endl;
+					cin >> traverse;
+					cout << "===============================================" << endl;
+					if (traverse == 1) {
+						myTree.preorder(myTree.root);
+					}
+					else if (traverse == 2) {
+						myTree.postorder(myTree.root);
+					}
+					else if (traverse == 3) {
+						myTree.inorder(myTree.root);
+					}
+
+					else
+						cout << "That was not one of the options, returning to menu" << endl;
+                   
+                    break;
+            case 4:
+					cout << "What number would you like to search for? " << endl;
+					cin >> value;
+                    myTree.search(value, myTree.root);
+
+                    break;
+
+            default:
+                cout << "Goodbye!" << endl;
+                exit(1);
+
+        }
+    }
+
+	/*
 	//Search for values
 	//1.Successful Search
 	if(myTree.search(17, myTree.root))
@@ -245,14 +324,21 @@ int main(){
 	
 	cout << "=================================================" << endl;
 	//Display Values :)
-	//myTree.preorder(myTree.root);
+	myTree.preorder(myTree.root);
 	//myTree.postorder(myTree.root);
-	myTree.inorder(myTree.root);
+	//myTree.inorder(myTree.root);
 	cout << "=================================================" << endl;
 
 	myTree.deleteNode(17);
 	myTree.deleteNode(75);
 	myTree.deleteNode(15);
 	myTree.deleteNode(99);
+	myTree.deleteNode(45);
+	myTree.deleteNode(80);
+	myTree.deleteNode(22);
+	myTree.preorder(myTree.root);
+
+	cout << "=================================================" << endl;
+	*/
 	return 0;
 }
